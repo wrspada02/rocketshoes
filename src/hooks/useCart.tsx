@@ -14,7 +14,7 @@ interface UpdateProductAmount {
 
 interface CartContextData {
   cart: Product[];
-  addProduct: (productId: number) => Promise<void>;
+  addProduct: (productId: Product[]) => Promise<void>;
   removeProduct: (productId: number) => void;
   updateProductAmount: ({ productId, amount }: UpdateProductAmount) => void;
 }
@@ -32,9 +32,21 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     return [];
   });
 
-  const addProduct = async (productId: number) => {
+  const addProduct = async (product: Product[]) => {
     try {
-      // TODO
+      const { id } = product[0];
+      const verifyId = isIdAlreadyExists(id);
+      if(verifyId){
+        setCart([...cart, 
+          {
+            id: product[0].id,
+            image: product[0].image,
+            price: product[0].price,
+            title: product[0].title,
+            amount: 1
+          }
+        ]);
+      }
     } catch {
       // TODO
     }
@@ -58,6 +70,12 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       // TODO
     }
   };
+
+  function isIdAlreadyExists(id: number){
+    const verifyIdProductExists = cart.filter((product) => product.id === id);
+    if(verifyIdProductExists[0])return false;
+    return true;
+  }
 
   return (
     <CartContext.Provider
