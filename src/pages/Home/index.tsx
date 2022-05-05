@@ -14,34 +14,16 @@ interface Product {
   image: string;
 }
 
-interface ProductFormatted extends Product {
-  priceFormatted?: string;
-}
-
 interface CartItemsAmount {
   [key: number]: number;
 }
 
 const Home = (): JSX.Element => {
-  const [products, setProducts] = useState<ProductFormatted[]>([]);
-  const { addProduct, cart } = useCart();
-  const [amount, setAmount] = useState<Stock[]>([]);
+  const { addProduct, cart, products } = useCart();
 
   // const cartItemsAmount = cart.reduce((sumAmount, product) => {
   //   // TODO
   // }, {} as CartItemsAmount)
-
-  useEffect(() => {
-    async function loadProducts() {
-      await api.get('/products')
-      .then(response => setProducts(response.data));
-      
-      await api.get('/stock')
-      .then(response => setAmount(response.data));
-    }
-
-    loadProducts();
-  }, []);
 
   function handleAddProduct(id: number) {
     const productToAddInCart = products.filter((product) => product.id === id);
