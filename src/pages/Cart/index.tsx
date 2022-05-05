@@ -20,18 +20,20 @@ interface Product {
 const Cart = (): JSX.Element => {
   const { cart, removeProduct, updateProductAmount, setCart, amount } = useCart();
 
-  // const cartFormatted = cart.map(product => ({
-  //   // TODO
-  // }))
-  // const total =
-  //   formatPrice(
-  //     cart.reduce((sumTotal, product) => {
-  //       // TODO
-  //     }, 0)
-  //   )
+   const total =
+       cart.reduce((sumTotal, product) => {
+          sumTotal += product.amount * product.price;
+          return sumTotal;
+       }, 0);
+  
 
   function handleProductIncrement(product: Product) {
-    // TODO
+    const indexCart = searchIndexCart(product.id);
+    const canIncrement = incrementTest(indexCart, product.id);
+    if(canIncrement){
+      const newCart = createNewCartArrayIncrement(indexCart);
+      setCart(newCart);
+    }
   }
 
   function handleProductDecrement(product: Product){
@@ -39,15 +41,14 @@ const Cart = (): JSX.Element => {
     const canDecrement = decrementTest(indexCart);
 
     if(canDecrement){
-      const newCart = createNewCartArray(indexCart);
+      const newCart = createNewCartArrayDecrement(indexCart);
       setCart(newCart);
-      console.log(cart);
     }
 
   }
 
   function handleRemoveProduct(productId: number) {
-    // TODO
+    removeProduct(productId);
   }
 
   function searchIndexCart(id: number){
@@ -62,10 +63,24 @@ const Cart = (): JSX.Element => {
     return true;
   }
 
-  function createNewCartArray(index: number){
+  function incrementTest(indexCart: number, id: number){
+    if(cart[indexCart].amount < 
+      amount[id-1].amount){
+        return true;
+      } 
+      return false;
+  }
+
+  function createNewCartArrayDecrement(index: number){
     const newArray = [...cart];
 
     newArray[index].amount -= 1;
+    return newArray;
+  }
+
+  function createNewCartArrayIncrement(index: number){
+    const newArray = [...cart];
+    newArray[index].amount += 1;
     return newArray;
   }
 
@@ -110,20 +125,21 @@ const Cart = (): JSX.Element => {
                 <button
                   type="button"
                   data-testid="increment-product"
-                // onClick={() => handleProductIncrement()}
+                  disabled={cart[searchIndexCart(product.id)].amount >= amount[product.id-1].amount}
+                  onClick={() => handleProductIncrement(product)}
                 >
                   <MdAddCircleOutline size={20} />
                 </button>
               </div>
             </td>
             <td>
-              <strong>R$ 359,80</strong>
+              <strong>{formatPrice(product.amount*product.price)}</strong>
             </td>
             <td>
               <button
                 type="button"
                 data-testid="remove-product"
-              // onClick={() => handleRemoveProduct(product.id)}
+                onClick={() => handleRemoveProduct(product.id)}
               >
                 <MdDelete size={20} />
               </button>
@@ -138,7 +154,7 @@ const Cart = (): JSX.Element => {
 
         <Total>
           <span>TOTAL</span>
-          <strong>R$ 359,80</strong>
+          <strong>{formatPrice(Number(total))}</strong>
         </Total>
       </footer>
     </Container>

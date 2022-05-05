@@ -30,13 +30,13 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   const [products, setProducts] = useState<Product[]>([]);
   const [amount, setAmount] = useState<Stock[]>([]);
   const [cart, setCart] = useState<Product[]>(() => {
-    // const storagedCart = Buscar dados do localStorage
 
-    // if (storagedCart) {
-    //   return JSON.parse(storagedCart);
-    // }
+    const storeCart = localStorage.getItem('@RocketShoes:cart');
+    if(storeCart) return JSON.parse(storeCart);
 
-    return [];
+    if(storeCart) {
+      return [JSON.parse(storeCart)];
+     }    
   });
 
   useEffect(() => {
@@ -51,6 +51,10 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     loadProducts();
   }, []);
 
+  useEffect(() => { 
+    localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart));
+  }, [cart])
+
   const addProduct = async (product: Product[]) => {
     try {
       const { id } = product[0];
@@ -62,7 +66,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
             image: product[0].image,
             price: product[0].price,
             title: product[0].title,
-            amount: 3
+            amount: 1
           }
         ]);
       }
@@ -73,7 +77,10 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const removeProduct = (productId: number) => {
     try {
-      // TODO
+      const newCart = [...cart];
+      const index = newCart.findIndex((product) => product.id === productId);
+      newCart.splice(index, 1);
+      setCart(newCart);
     } catch {
       toast.error('Quantidade solicitada fora de estoque');
     }
