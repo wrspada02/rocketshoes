@@ -9,16 +9,10 @@ import { useCart } from '../../hooks/useCart';
 import { formatPrice } from '../../util/format';
 import { Container, ProductTable, Total } from './styles';
 
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-  amount: number;
-}
+import { Product } from "../../types"
 
 const Cart = (): JSX.Element => {
-  const { cart, removeProduct, updateProductAmount, setCart, amount } = useCart();
+  const { cart, removeProduct, updateProductAmount, amount } = useCart();
 
    const total =
        cart.reduce((sumTotal, product) => {
@@ -32,7 +26,7 @@ const Cart = (): JSX.Element => {
     const canIncrement = incrementTest(indexCart, product.id);
     if(canIncrement){
       const newCart = createNewCartArrayIncrement(indexCart);
-      setCart(newCart);
+      updateProductAmount(newCart);
     }
   }
 
@@ -42,9 +36,8 @@ const Cart = (): JSX.Element => {
 
     if(canDecrement){
       const newCart = createNewCartArrayDecrement(indexCart);
-      setCart(newCart);
+      updateProductAmount(newCart);
     }
-
   }
 
   function handleRemoveProduct(productId: number) {
@@ -83,6 +76,7 @@ const Cart = (): JSX.Element => {
     newArray[index].amount += 1;
     return newArray;
   }
+
 
   return (
     <Container>

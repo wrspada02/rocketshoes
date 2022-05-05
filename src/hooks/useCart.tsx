@@ -7,21 +7,14 @@ interface CartProviderProps {
   children: ReactNode;
 }
 
-interface UpdateProductAmount {
-  productId: number;
-  amount: number;
-}
-
 interface CartContextData {
   products: Product[];
-  //setProducts: () => void;
   amount: Stock[];
-  //setAmount: () => void;
   cart: Product[];
   setCart: (item: Product[]) => void;
   addProduct: (productId: Product[]) => Promise<void>;
   removeProduct: (productId: number) => void;
-  updateProductAmount: ({ productId, amount }: UpdateProductAmount) => void;
+  updateProductAmount: (product: Product[]) => void;
 }
 
 const CartContext = createContext<CartContextData>({} as CartContextData);
@@ -33,10 +26,6 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
     const storeCart = localStorage.getItem('@RocketShoes:cart');
     if(storeCart) return JSON.parse(storeCart);
-
-    if(storeCart) {
-      return [JSON.parse(storeCart)];
-     }    
   });
 
   useEffect(() => {
@@ -53,7 +42,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   useEffect(() => { 
     localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart));
-  }, [cart])
+  }, [cart]);
 
   const addProduct = async (product: Product[]) => {
     try {
@@ -86,13 +75,9 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     }
   };
 
-  const updateProductAmount = async ({
-    productId,
-    amount,
-  }: UpdateProductAmount) => {
+  const updateProductAmount = async (product: Product[]) => {
     try {
-      
-
+      setCart(product);
     } catch {
       toast.error('Erro na alteração de quantidade do produto');
     }

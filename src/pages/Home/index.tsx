@@ -1,29 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { MdAddShoppingCart } from 'react-icons/md';
 
 import { ProductList } from './styles';
-import { api } from '../../services/api';
 import { formatPrice } from '../../util/format';
 import { useCart } from '../../hooks/useCart';
-import { Stock } from '../../types';
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-}
-
-interface CartItemsAmount {
-  [key: number]: number;
-}
 
 const Home = (): JSX.Element => {
   const { addProduct, cart, products } = useCart();
 
-  // const cartItemsAmount = cart.reduce((sumAmount, product) => {
-  //   // TODO
-  // }, {} as CartItemsAmount)
+  function findIndexCartAmount(id: number){
+    const item = cart.filter((item) => item.id === id);
+    if(item[0] !== undefined){
+      const { amount } = item[0];
+      return amount;
+    }
+    return 0;
+  }
 
   function handleAddProduct(id: number) {
     const productToAddInCart = products.filter((product) => product.id === id);
@@ -44,7 +36,7 @@ const Home = (): JSX.Element => {
           >
             <div data-testid="cart-product-quantity">
               <MdAddShoppingCart size={16} color="#FFF" />
-              {/* {cartItemsAmount[product.id] || 0} */} 2
+              {findIndexCartAmount(product.id)}
             </div>
 
           <span>ADICIONAR AO CARRINHO</span>
